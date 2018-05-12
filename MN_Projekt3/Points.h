@@ -10,6 +10,7 @@ struct Point {
 class Points
 {
 public:
+	Points();
 	Points(std::vector<Point> input);
 	~Points();
 	void print();

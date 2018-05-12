@@ -18,3 +18,22 @@ double Interpolation::LagrangeInterpolation(Points inputPoints, double inputX)
 
 	return result;
 }
+
+Points Interpolation::Lagrange(Points inputPoints, int howManyPointsToUse, double deltaX)
+{
+	Points output;
+	inputPoints.reducePointsTo(howManyPointsToUse);
+
+	double lastXValue = inputPoints.points.back().x;
+	Point p;
+	if (lastXValue > 0) {
+		for (double i = 0; i < lastXValue; i += deltaX) {
+			p.x = i;
+			p.y = LagrangeInterpolation(inputPoints, i);
+			output.points.push_back(p);
+		}
+	}
+
+
+	return output;
+}

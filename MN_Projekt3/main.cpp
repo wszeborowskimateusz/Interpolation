@@ -7,7 +7,8 @@
 int main(int argc, char *argv[]) {
 
 	Points p(File::extractCoordinatesFromFile("plasko.txt"));
-	std::cout << Interpolation::LagrangeInterpolation(p, 11400.0) << "\n";
 
+	p = Interpolation::Lagrange(p, 20, 100);
+	p.print();
 	return 0;
 }

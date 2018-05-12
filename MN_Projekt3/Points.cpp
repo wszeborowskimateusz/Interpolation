@@ -2,6 +2,10 @@
 
 
 
+Points::Points()
+{
+}
+
 Points::Points(std::vector<Point> input)
 {
 	for (auto& value : input) {
