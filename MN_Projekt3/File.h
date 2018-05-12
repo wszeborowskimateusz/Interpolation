@@ -1,9 +1,11 @@
 #pragma once
 #include <string>
-
-class File
+#include <vector>
+#include "Points.h"
+static class File
 {
 public:
-	static void extractCoordinatesFromFile(std::string fileName);
+	//Split one file containing points(x,y) into two files
+	static std::vector<Point> extractCoordinatesFromFile(std::string fileName);
 };
 

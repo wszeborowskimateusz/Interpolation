@@ -1,9 +1,15 @@
 #include <fstream>
 #include "File.h"
+#include "Points.h"
 
+
+#include <vector>
 int main() {
 
-	File::extractCoordinatesFromFile("gleboko.txt");
+	Points p(File::extractCoordinatesFromFile("plasko.txt"));
+
+	p.print();
+
 
 	return 0;
 }
