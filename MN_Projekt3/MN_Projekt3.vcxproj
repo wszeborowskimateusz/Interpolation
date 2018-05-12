@@ -116,13 +116,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="File.cpp" />
+    <ClCompile Include="IMatrix.cpp" />
     <ClCompile Include="Interpolation.cpp" />
+    <ClCompile Include="LinearEquationsSolver.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Points.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="File.h" />
+    <ClInclude Include="IMatrix.h" />
     <ClInclude Include="Interpolation.h" />
+    <ClInclude Include="LinearEquationsSolver.h" />
+    <ClInclude Include="Matrix.h" />
     <ClInclude Include="Points.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
