@@ -13,7 +13,7 @@ public:
 	Points(std::vector<Point> input);
 	~Points();
 	void print();
-private:
 	std::vector<Point> points;
+	void reducePointsTo(int number);
 };
 
