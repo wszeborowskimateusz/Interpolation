@@ -5,12 +5,16 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
+
+
 int main(int argc, char *argv[]) {
 
-	Points p(File::extractCoordinatesFromFile("plasko.txt"));
+	Points p(File::extractCoordinatesFromFile("stale.txt"));
 
-	p = Interpolation::Spline(p, 20, 100);
+	p = Interpolation::Spline(p, 20, 20);
 	p.print();
+	
+	
 
 	return 0;
 }

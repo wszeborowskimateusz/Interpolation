@@ -2,6 +2,9 @@
 #include "LinearEquationsSolver.h"
 #include <math.h>
 
+int LUPDecompose(Matrix& A, Matrix* P);
+void LUPSolve(Matrix A, Matrix P, Matrix b, Matrix& x);
+
 double Interpolation::LagrangeInterpolation(Points inputPoints, double inputX)
 {
 	double result = 0.0;
@@ -28,7 +31,7 @@ Matrix Interpolation::SplineInterpolation(Points inputPoints)
 	Matrix results(numberOfCoefficients, 1);
 
 	double h = inputPoints.points[1].x - inputPoints.points[0].x;
-	//TODO generate proper linear equations
+	
 	int offset = 0;
 	int tmpFirstDerivative = 1;
 	int tmpSecondDerivative = 2;
@@ -51,7 +54,7 @@ Matrix Interpolation::SplineInterpolation(Points inputPoints)
 
 			//Coefficient Matrix filling
 			if ((i % 2 == 0) && i < numberOfCoefficients / 2) {
-				if (j == 0) coefficients[i][j] = 1;
+				if (j == i*2) coefficients[i][j] = 1;
 				else coefficients[i][j] = 0;
 			}
 			else if (i < numberOfCoefficients / 2) {
@@ -61,6 +64,7 @@ Matrix Interpolation::SplineInterpolation(Points inputPoints)
 					else if (j % 4 == 2)coefficients[i][j] = h*h;
 					else coefficients[i][j] = h*h*h;
 				}
+				else coefficients[i][j] = 0;
 			}
 			else if (i == numberOfCoefficients - 2) {
 				if (j == 2)coefficients[i][j] = 2;
@@ -84,7 +88,7 @@ Matrix Interpolation::SplineInterpolation(Points inputPoints)
 					//second derivative
 					if (j == tmpSecondDerivative)coefficients[i][j] = 2;
 					else if (j == tmpSecondDerivative + 1)coefficients[i][j] = 6 * h;
-					else if (j == tmpSecondDerivative + 5)coefficients[i][j] = - 2;
+					else if (j == tmpSecondDerivative + 4)coefficients[i][j] = - 2;
 					else coefficients[i][j] = 0;
 				}
 			}
@@ -92,7 +96,7 @@ Matrix Interpolation::SplineInterpolation(Points inputPoints)
 		if (i % 2 == 1) {
 			offset += 4;
 			if(i >= numberOfCoefficients / 2)
-				tmpSecondDerivative += 5;
+				tmpSecondDerivative += 4;
 		}
 		else {
 			if (i >= numberOfCoefficients / 2)
@@ -100,7 +104,14 @@ Matrix Interpolation::SplineInterpolation(Points inputPoints)
 		}
 	}
 
-	return LinearEquationsSolver::LU_Factorization(coefficients, results);
+	//coefficients.printMatrix();
+	Matrix pivots(numberOfCoefficients + 1, 1);
+	LUPDecompose(coefficients, &pivots);
+	Matrix x(numberOfCoefficients, 1);
+	LUPSolve(coefficients, pivots, results, x);
+	//x.printMatrix();
+
+	return x;
 }
 
 Points Interpolation::Lagrange(Points inputPoints, int howManyPointsToUse, double deltaX)
@@ -142,3 +153,71 @@ Points Interpolation::Spline(Points inputPoints, int howManyPointsToUse, double 
 
 	return output;
 }
+
+
+int LUPDecompose(Matrix& A, Matrix* P) {
+
+	int i, j, k, imax;
+	double maxA, *ptr, absA;
+	ptr = new double[A.getN()];
+
+	for (i = 0; i <= A.getN(); i++)
+		(*P)[i][0] = i;
+
+	for (i = 0; i < A.getN(); i++) {
+		maxA = 0.0;
+		imax = i;
+
+		for (k = i; k < A.getN(); k++)
+			if ((absA = fabs(A[k][i])) > maxA) {
+				maxA = absA;
+				imax = k;
+			}
+
+
+		if (imax != i) {
+
+			j = (*P)[i][0];
+			(*P)[i][0] = (*P)[imax][0];
+			(*P)[imax][0] = j;
+
+			for (int q = 0; q < A.getN(); q++) {
+				ptr[q] = A[i][q];
+			}
+			std::cout << std::endl;
+			for (int q = 0; q < A.getN(); q++) {
+				A[i][q] = A[imax][q];
+				A[imax][q] = ptr[q];
+			}
+
+			(*P)[A.getN()][0]++;
+		}
+
+		for (j = i + 1; j < A.getN(); j++) {
+			A[j][i] /= A[i][i];
+
+			for (k = i + 1; k < A.getN(); k++)
+				A[j][k] -= A[j][i] * A[i][k];
+		}
+	}
+
+	return 1;
+}
+
+void LUPSolve(Matrix A, Matrix P, Matrix b, Matrix& x) {
+
+	for (int i = 0; i < A.getN(); i++) {
+		x[i][0] = b[P[i][0]][0];
+
+		for (int k = 0; k < i; k++)
+			x[i][0] -= A[i][k] * x[k][0];
+	}
+
+	for (int i = A.getN() - 1; i >= 0; i--) {
+		for (int k = i + 1; k < A.getN(); k++)
+			x[i][0] -= A[i][k] * x[k][0];
+
+		x[i][0] = x[i][0] / A[i][i];
+	}
+}
+

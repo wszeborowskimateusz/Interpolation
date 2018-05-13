@@ -30,7 +30,7 @@ void Points::reducePointsTo(int number)
 {
 	std::vector<Point> newPoints;
 	int jump = points.size() / number;
-	for (int i = 0; i < points.size(); i+=jump) {
+	for (int i = 0; i < points.size() && newPoints.size() < number; i+=jump) {
 		newPoints.push_back(points[i]);
 	}
 
