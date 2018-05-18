@@ -104,12 +104,11 @@ Matrix Interpolation::SplineInterpolation(Points inputPoints)
 		}
 	}
 
-	//coefficients.printMatrix();
+	
 	Matrix pivots(numberOfCoefficients + 1, 1);
 	LUPDecompose(coefficients, &pivots);
 	Matrix x(numberOfCoefficients, 1);
 	LUPSolve(coefficients, pivots, results, x);
-	//x.printMatrix();
 
 	return x;
 }
@@ -143,9 +142,11 @@ Points Interpolation::Spline(Points inputPoints, int howManyPointsToUse, double 
 		p.x = i;
 		double result = 0.0;
 		// range in what our current x is - assumption - ranges are equal
+		
 		int xRange = i / (lastXValue / (howManyPointsToUse - 1));
 		for (int j = 0; j < 4; j++) {
-			result += coefficientMatrix[4 * xRange + j][0] * pow(i, j);
+			double X = i - inputPoints.points[xRange].x;
+			result += coefficientMatrix[4 * xRange + j][0] * pow(X, j);
 		}
 		p.y = result;
 		output.points.push_back(p);
@@ -155,14 +156,14 @@ Points Interpolation::Spline(Points inputPoints, int howManyPointsToUse, double 
 }
 
 
-int LUPDecompose(Matrix& A, Matrix* P) {
+int LUPDecompose(Matrix& A, Matrix* Pivots) {
 
 	int i, j, k, imax;
 	double maxA, *ptr, absA;
 	ptr = new double[A.getN()];
 
 	for (i = 0; i <= A.getN(); i++)
-		(*P)[i][0] = i;
+		(*Pivots)[i][0] = i;
 
 	for (i = 0; i < A.getN(); i++) {
 		maxA = 0.0;
@@ -177,20 +178,20 @@ int LUPDecompose(Matrix& A, Matrix* P) {
 
 		if (imax != i) {
 
-			j = (*P)[i][0];
-			(*P)[i][0] = (*P)[imax][0];
-			(*P)[imax][0] = j;
+			j = (*Pivots)[i][0];
+			(*Pivots)[i][0] = (*Pivots)[imax][0];
+			(*Pivots)[imax][0] = j;
 
 			for (int q = 0; q < A.getN(); q++) {
 				ptr[q] = A[i][q];
 			}
-			std::cout << std::endl;
+	
 			for (int q = 0; q < A.getN(); q++) {
 				A[i][q] = A[imax][q];
 				A[imax][q] = ptr[q];
 			}
 
-			(*P)[A.getN()][0]++;
+			(*Pivots)[A.getN()][0]++;
 		}
 
 		for (j = i + 1; j < A.getN(); j++) {
@@ -204,10 +205,10 @@ int LUPDecompose(Matrix& A, Matrix* P) {
 	return 1;
 }
 
-void LUPSolve(Matrix A, Matrix P, Matrix b, Matrix& x) {
+void LUPSolve(Matrix A, Matrix Pivots, Matrix b, Matrix& x) {
 
 	for (int i = 0; i < A.getN(); i++) {
-		x[i][0] = b[P[i][0]][0];
+		x[i][0] = b[Pivots[i][0]][0];
 
 		for (int k = 0; k < i; k++)
 			x[i][0] -= A[i][k] * x[k][0];

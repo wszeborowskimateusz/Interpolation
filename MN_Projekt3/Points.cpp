@@ -21,7 +21,7 @@ Points::~Points()
 void Points::print()
 {
 	std::cout << "Thera are " << points.size() << " points\n";
-	for (auto& p : points) {
+	for (auto p : points) {
 		std::cout << "x = " << p.x << " y = " << p.y << std::endl;
 	}
 }

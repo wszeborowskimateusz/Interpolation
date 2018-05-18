@@ -11,7 +11,9 @@ int main(int argc, char *argv[]) {
 
 	Points p(File::extractCoordinatesFromFile("stale.txt"));
 
-	p = Interpolation::Spline(p, 20, 20);
+	p = Interpolation::Spline(p, 10, 10);
+
+	File::saveInterpolationResultsToFile(p, "result");
 	p.print();
 	
 	

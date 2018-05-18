@@ -23,8 +23,8 @@ std::vector<Point> File::extractCoordinatesFromFile(std::string fileName)
 	fileY = fileY.append(nameWithoutExt).append("_Y").append(extension);
 
 	std::ofstream x(fileX), y(fileY);
-	x.precision(20);
-	y.precision(20);
+	//x.precision(20);
+	//y.precision(20);
 
 	std::string line;
 	Point p;
@@ -44,4 +44,21 @@ std::vector<Point> File::extractCoordinatesFromFile(std::string fileName)
 	y.close();
 
 	return output;
+}
+
+void File::saveInterpolationResultsToFile(Points p, std::string fileName)
+{
+	std::string fileNameX="", fileNameY="";
+	fileNameX = fileNameX.append(fileName).append("_X.txt");
+	fileNameY = fileNameY.append(fileName).append("_Y.txt");
+	std::ofstream outputFileX(fileNameX), outputFileY(fileNameY);
+
+	for (auto point : p.points) {
+		outputFileX << point.x << "\n";
+		outputFileY << point.y << "\n";
+	}
+
+	outputFileX.close();
+	outputFileY.close();
+
 }
