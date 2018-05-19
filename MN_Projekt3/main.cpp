@@ -1,10 +1,7 @@
-#include <fstream>
 #include "File.h"
 #include "Points.h"
 #include "Interpolation.h"
-#include <iostream>
-#include <vector>
-#include <math.h>
+
 
 
 int main(int argc, char *argv[]) {
